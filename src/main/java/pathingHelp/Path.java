@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static pathingHelp.ui.PathMenu.ANY;
+import static pathingHelp.PathingHelp.logger;
 
 public class Path {
     public ArrayList<MapRoomNode> nodes;
@@ -82,21 +83,46 @@ public class Path {
         return sb.toString();
     }
 
-    public static ArrayList<Path> filterPaths(ArrayList<Path> paths, int numRests, int numEvents, int numElites, int numShops) {
+    public static ArrayList<Path> filterPaths(ArrayList<Path> paths, ArrayList<MapRoomNode> mustContainNodes, int numRests, int numEvents, int numElites, int numShops) {
         ArrayList<Path> result = new ArrayList<Path>();
 
-
+        /*
+        MapRoomNode curNode = AbstractDungeon.getCurrMapNode();
+        logger.info("In filterPaths, current map node is " + curNode);
+        */
         for (Path path : paths) {
             if ( (numRests == ANY || numRests == path.numRests()) &&
                     (numElites == ANY || numElites == path.numElites()) &&
                     (numEvents == ANY || numEvents == path.numEvents()) &&
-                    (numShops == ANY || numShops == path.numShops())
+                    (numShops == ANY || numShops == path.numShops()) &&
+                    path.containsAllNodes(mustContainNodes)
+                    // (curNode.y == -1 || path.containsNode(curNode))
                ) {
                 result.add(path);
             }
         }
 
         return result;
+    }
+
+    private boolean containsNode(MapRoomNode cNode) {
+        boolean contains = false;
+        for (MapRoomNode node : nodes) {
+            if (node.x == cNode.x && node.y == cNode.y) {
+                contains = true;
+            }
+        }
+        return contains;
+    }
+
+    private boolean containsAllNodes(ArrayList<MapRoomNode> cNodes) {
+        boolean containsAll = true;
+        for (MapRoomNode cNode : cNodes) {
+            if (!containsNode(cNode)) {
+                containsAll = false;
+            }
+        }
+        return containsAll;
     }
 
     public static ArrayList<Integer> numRestOptions(ArrayList<Path> paths) {

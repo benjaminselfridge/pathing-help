@@ -19,8 +19,8 @@ public class PathMenu {
     static final Color FONT_COLOR = new Color(0xD0_D0_D0_FF);
     private static final Texture LEFT_ARROW = ImageMaster.CF_LEFT_ARROW;
     private static final Texture RIGHT_ARROW = ImageMaster.CF_RIGHT_ARROW;
-    private static final float menuX = 160.0f * Settings.scale; // Legend.X + 75.0f;
-    private static final float menuY = 256.0f * Settings.scale;
+    private static final float menuX = Settings.WIDTH - 160.0f; // Legend.X + 75.0f;
+    private static final float menuY = 48.0f;
     private static final float ySpacing = 45.0f;
     private static final float arrowXSpacing = 74.0f;
 
@@ -71,12 +71,26 @@ public class PathMenu {
         this.pathSelectorText.setVal(currentPathIx+1);
     }
 
+    private static ArrayList<MapRoomNode> computeNodesTaken() {
+        ArrayList<MapRoomNode> nodesTaken = new ArrayList<MapRoomNode>();
+        for (ArrayList<MapRoomNode> row : AbstractDungeon.map) {
+            for (MapRoomNode node : row) {
+                if (node.taken) nodesTaken.add(node);
+            }
+        }
+        if (AbstractDungeon.getCurrMapNode().y > -1) {
+            nodesTaken.add(AbstractDungeon.getCurrMapNode());
+        }
+        return nodesTaken;
+    }
+
     private void recomputeCurrentPaths() {
-        currentPaths = Path.filterPaths(paths, numRests, numEvents, numElites, numShops);
+        ArrayList<MapRoomNode> nodesTaken = computeNodesTaken();
+        currentPaths = Path.filterPaths(paths, nodesTaken, numRests, numEvents, numElites, numShops);
+        if (currentPaths.isEmpty()) {
+            currentPaths = Path.filterPaths(paths, new ArrayList(), numRests, numEvents, numElites, numShops);
+        }
         setCurrentPathIx(0);
-        //MapRoomNode c = AbstractDungeon.getCurrMapNode();
-        //logger.info("player's current node: " + c);
-        //logger.info("num current paths: " + currentPaths.size());
     }
 
     private void setNumRests(int n) {
