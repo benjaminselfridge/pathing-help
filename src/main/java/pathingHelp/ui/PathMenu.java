@@ -44,6 +44,7 @@ public class PathMenu {
 
     public void selectorChangeValue(SelectorId id, boolean increment) {
         if (id == SelectorId.PATH) {
+
             if (increment) {
                 setCurrentPathIx((currentPathIx + 1) % currentPaths.size());
             } else {

@@ -144,6 +144,7 @@ public class PathingHelp implements
                 // ArrayList<Path> paths = new ArrayList<Path>();
                 paths.clear();
                 for (MapRoomNode startNode : AbstractDungeon.map.get(0)) {
+                    logger.info("Start node:" + startNode);
                     paths.addAll(computeAllPaths(AbstractDungeon.map, startNode));
                 /*
                 for (Path path : computeAllPaths(AbstractDungeon.map, startNode)) {
@@ -151,6 +152,7 @@ public class PathingHelp implements
                 }
                  */
                 }
+                logger.info(AbstractDungeon.map);
                 logger.info("Computed " + paths.size() + " paths.");
                 logger.info("  * Num rest options: " + Path.numRestOptions(paths));
 
@@ -187,8 +189,15 @@ public class PathingHelp implements
         // If there are no edges, return a singleton
         ArrayList<ArrayList<MapRoomNode>> l = new ArrayList<ArrayList<MapRoomNode>>();
 
+        int mapTop;
+        if (AbstractDungeon.actNum == 4) {
+            mapTop = 2;
+        } else {
+            mapTop = AbstractDungeon.map.size() - 1;
+        }
+
         // If the node is at the top of the map, return a singleton
-        if (node.y == map.size() - 1) {
+        if (node.y == mapTop) {
             ArrayList<MapRoomNode> endPath = new ArrayList<MapRoomNode>(Collections.singletonList(node));
             l.add(endPath);
         }
